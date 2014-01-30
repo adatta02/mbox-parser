@@ -30,24 +30,16 @@ object Main {
   val addressesRe = """(?s).*<(.*?)>""".r
   
   def main(args: Array[String]): Unit = {    
-    val mboxFile = new FileInputStream( new File("/home/ashish/Downloads/myinbox_small.mbox") )    
-    val reader = new BufferedReader( new InputStreamReader(mboxFile) )
-    val iterator = Iterator.continually(reader.readLine()).takeWhile( _!= null )    
+        
+    val mboxIiterator = new MboxIterator("/home/ashish/Downloads/myinbox_small.mbox")    
     
-    val parsedEmails = iterator
-	    .foldLeft( List[String]() )((list, el) => {    	
-	    	if( "(?s).*From \\d+@xxx \\w+ \\w+ \\d+ \\d+:\\d+:\\d+ \\d+".r.findFirstIn(el) == None ){ 
-	    	  list.dropRight(1) :+ ( list.last + "\n" + el )
-	    	}else{
-	    		list :+ el
-	    	}						 
-	    })
-	    .map(extractEmailInfo)
-	    .map(insertEmailRow)
-	    .map(insertEmailMetadataRow)
+    val parsedEmails = mboxIiterator
+	    				.map(extractEmailInfo)
+	    				.map(insertEmailRow)
+	    				.map(insertEmailMetadataRow)
 	    	    
 	println("Processed: " + parsedEmails.length + " emails.")
-	    
+    
   }
 
   def insertEmailMetadataRow(el: ParsedEmail): ParsedEmail = {
