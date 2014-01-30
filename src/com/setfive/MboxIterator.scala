@@ -8,7 +8,7 @@ import scala.util.Random
 
 class MboxIterator(mboxFilename: String) extends Iterator[String] {
   
-  val mboxFile = new FileInputStream( new File("/home/ashish/Downloads/myinbox_small.mbox") )    
+  val mboxFile = new FileInputStream( new File(mboxFilename) )    
   val reader = new BufferedReader( new InputStreamReader(mboxFile) )  
   val iterator = Iterator.continually(reader.readLine()).takeWhile( _!= null )
   
@@ -24,12 +24,11 @@ class MboxIterator(mboxFilename: String) extends Iterator[String] {
     var emailBody = this.lastLine
     for(line <- iterator){
       
-      if( line.matches( this.findRe.toString ) ){
-        
+      if( line.matches( this.findRe.toString ) ){        
         if( emailBody.length() == 0 ){
           emailBody = emailBody + line + "\n"
         }else{
-          this.lastLine = line
+          this.lastLine = line + "\n"
           return emailBody
         }
       }else{

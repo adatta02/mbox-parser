@@ -31,10 +31,11 @@ object Main {
   
   def main(args: Array[String]): Unit = {    
         
-    val mboxIiterator = new MboxIterator("/home/ashish/Downloads/myinbox_small.mbox")    
+    val mboxIiterator = new MboxIterator("/home/ashish/Downloads/myinbox_big.mbox")    
     
     val parsedEmails = mboxIiterator
 	    				.map(extractEmailInfo)
+	    				.filter( e => e.labels.contains("Chat") == false )
 	    				.map(insertEmailRow)
 	    				.map(insertEmailMetadataRow)
 	    	    
@@ -43,7 +44,7 @@ object Main {
   }
 
   def insertEmailMetadataRow(el: ParsedEmail): ParsedEmail = {
-	      
+    
 	  this.mysqlConn.setAutoCommit(false)	      
 	  val labelStmt =  this.mysqlConn.prepareStatement( "INSERT INTO email_label (email_id, label) " + "VALUES (?, ?)" )
 	  val toStmt = this.mysqlConn.prepareStatement( "INSERT INTO email_to (email_id, email_to) " + "VALUES (?, ?)" )
@@ -70,10 +71,11 @@ object Main {
   }
   
   def insertEmailRow(el: ParsedEmail): ParsedEmail = {
+        
 	  this.mysqlConn.setAutoCommit(true)
 	  val stmt = this.mysqlConn
 			  		 .prepareStatement( "INSERT INTO email (created_at, email_from, subject, email_from_user, email_from_domain) " 
-			  						+ "VALUES (?, ?, ?, ?, ?)" )
+			  							+ "VALUES (?, ?, ?, ?, ?)" )
 	  
 	  println("Inserting " + el.subject)
 			  						
@@ -95,7 +97,7 @@ object Main {
 	  el.copy( pk_id = Option[Integer](pk) )
   }
   
-  def extractEmailInfo(el:String): ParsedEmail = {
+  def extractEmailInfo(el:String): ParsedEmail = {    
     
     val labels = this.labelsRe.findFirstMatchIn(el) match {
     	case Some(m) => m.group(1).split(",").toList
@@ -137,7 +139,7 @@ object Main {
     	.toList.mkString("")
     }).toList
     
-    println("Extracted " + subject)
+    println( el.split("\n")(0) )
     
     new ParsedEmail(labels = labels, date = date, fromUser = fromParts(0), fromDomain = fromParts(1), 
         			subject = subject, from = from, toList = addressList)	    	
