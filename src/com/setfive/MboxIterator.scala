@@ -20,11 +20,11 @@ class MboxIterator(mboxFilename: String) extends Iterator[String] {
   }
   
   def next(): String = {
-    
+        
     var emailBody = this.lastLine
-    for(line <- iterator){
+    for(line <- iterator){      
       
-      if( line.matches( this.findRe.toString ) ){        
+      if( line.indexOf("From") > -1 && line.matches( this.findRe.toString ) ){        
         if( emailBody.length() == 0 ){
           emailBody = emailBody + line + "\n"
         }else{
@@ -35,7 +35,7 @@ class MboxIterator(mboxFilename: String) extends Iterator[String] {
         emailBody = emailBody + line + "\n"        
       }
       
-    }
+    }   
     
     emailBody
   } 

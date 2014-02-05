@@ -17,7 +17,7 @@ case class ParsedEmail(from: String, fromUser: String, fromDomain: String, subje
 
 object Main {
   
-  val mysqlConn = DriverManager.getConnection("jdbc:mysql://localhost/howrse?user=root&password=root&rewriteBatchedStatements=true")
+  val mysqlConn = DriverManager.getConnection("jdbc:mysql://localhost/gmail?user=root&password=root&rewriteBatchedStatements=true")
   
   val dateParser = new java.text.SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss")
   val dateOutput = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")  
@@ -30,7 +30,9 @@ object Main {
   val addressesRe = """(?s).*<(.*?)>""".r
   
   def main(args: Array[String]): Unit = {    
-        
+    
+    println("Opening mbox...")
+    
     val mboxIiterator = new MboxIterator("/home/ashish/Downloads/myinbox_big.mbox")    
     
     val parsedEmails = mboxIiterator
