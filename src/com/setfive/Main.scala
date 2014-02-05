@@ -31,10 +31,15 @@ object Main {
   
   def main(args: Array[String]): Unit = {    
     
+    if( args.length < 1 ){
+      println("Sorry! You need to pass a filename to parse.")
+      return
+    }
+    
     println("Opening mbox...")
     
-    val mboxIiterator = new MboxIterator("/home/ashish/Downloads/myinbox_big.mbox")    
-    
+    val mboxIiterator = new MboxIterator(args(0))    
+        
     val parsedEmails = mboxIiterator
 	    				.map(extractEmailInfo)
 	    				.filter( e => e.labels.contains("Chat") == false )
